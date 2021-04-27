@@ -1,0 +1,144 @@
+VERSION 1 -> Without sub-directories
+------------------------------------------------------------+
+VERSION 1.0													|
+------------------------------------------------------------+
+CC			= g++
+CFLAGS	 	= -Wall -Wextra -std=c++11
+
+main: main.o Student.o
+	$(CC) $(CFLAGS) $? -o $@
+
+main.o: main.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+	
+Student.o: Student.cpp
+	$(CC) $(CFLAGS) -c $<
+
+
+------------------------------------------------------------+
+VERSION 1.1													|
+------------------------------------------------------------+
+CC			= g++
+CFLAGS	 	= -Wall -Wextra -std=c++11
+
+main: main.o Student.o
+	$(CC) $(CFLAGS) $? -o $@
+
+%.o: %.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+
+.PHONY: clean
+
+clean:
+	rm -r *.o main
+
+
+------------------------------------------------------------+
+VERSION 1.2													|
+------------------------------------------------------------+
+CC			= g++
+CFLAGS	 	= -Wall -Wextra -std=c++11
+
+FILENAME	= ListIter
+
+$(FILENAME): main.o Student.o
+	$(CC) $(CFLAGS) $? -o $@
+
+%.o: %.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+
+.PHONY: clean
+
+clean:
+	rm -r *.o $(FILENAME)
+
+
+VERSION 2 -> with sub-directories
+.
+├── bin
+│   └── ListIter
+├── building.txt
+├── include
+│   └── inlcude-1.hpp
+├── Makefile
+├── obj
+│   ├── main.o
+│   └── include-1.o
+└── src
+    ├── main.cpp
+    └── include-1.cpp
+
+------------------------------------------------------------+
+VERSION 2.0													|
+------------------------------------------------------------+
+CC			= g++
+CFLAGS	 	= -Wall -Wextra -std=c++11
+
+FILENAME	= ListIter
+
+all: bin/$(FILENAME)
+
+bin/$(FILENAME): obj/main.o obj/Student.o
+	$(CC) $(CFLAGS) $? -o $@
+
+obj/%.o: src/%.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+
+.PHONY: clean
+
+clean:
+	rm -r obj/* bin/*
+
+
+------------------------------------------------------------+
+VERSION 2.1													|
+------------------------------------------------------------+
+CC			= g++
+CFLAGS	 	= -Wall -Wextra -std=c++11
+
+FILENAME	= ListIter
+
+OBJS		= obj/main.o obj/Student.o
+
+all: bin/$(FILENAME)
+
+bin/$(FILENAME): $(OBJS)
+	$(CC) $(CFLAGS) $? -o $@
+
+obj/%.o: src/%.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+
+.PHONY: clean
+
+clean:
+	rm -r obj/* bin/*
+
+
+
+
+
+CC			= g++
+CFLAGS	 	= -Wall -Wextra -std=c++11
+
+FILENAME	= ListIter
+
+SRC			= ./src
+SRCS		= $(wildcard $(SRC)/*.cpp)
+OBJ			= ./obj
+OBJS		= $(patsubst $(SRC)/%.cpp, $(OBJ)/%.o, $(SRCS))
+
+BINDIR		= bin
+BIN			= $(BINDIR)/$(FILENAME)
+
+all: $(BIN)
+
+$(BIN): $(OBJS)
+	$(CC) $(CFLAGS) $? -o $@
+
+$(OBJ)/%.o: $(SRC)%.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+
+.PHONY: clean
+
+clean:
+	rm -r $(OBJ)/* $(BINDIR)/*
